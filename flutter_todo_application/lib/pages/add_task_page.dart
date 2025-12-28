@@ -40,11 +40,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(primary: Colors.black),
+        return Localizations.override(
+          context: context,
+          locale: const Locale('en', 'US'),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            child: Theme(
+              data: ThemeData.light().copyWith(
+                colorScheme: const ColorScheme.light(primary: Colors.black),
+              ),
+              child: child!,
+            ),
           ),
-          child: child!,
         );
       },
     );

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "20079332996",
+    "project_id": "student-todo-app-1536b",
+    "storage_bucket": "student-todo-app-1536b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20079332996:android:ba2bff99c99ea8a2f9bcd1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_todo_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNK2GLRatV8x2FfCP2vF0MKWVl5u0hPh0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

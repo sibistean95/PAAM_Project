@@ -15,7 +15,7 @@ class _LoadingPageState extends State<LoadingPage> {
     _navigateToHome();
   }
 
-  _navigateToHome() async {
+  Future<void> _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3), () {});
     if (!mounted) return;
 
