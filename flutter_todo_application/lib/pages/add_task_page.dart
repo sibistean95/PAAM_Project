@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'task_list_page.dart';
 
 class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({super.key});
+  final Task? taskToEdit;
+
+  const AddTaskPage({super.key, this.taskToEdit});
 
   @override
   State<AddTaskPage> createState() => _AddTaskPageState();
@@ -13,10 +15,20 @@ class _AddTaskPageState extends State<AddTaskPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.taskToEdit != null) {
+      controller.text = widget.taskToEdit!.title;
+      selectedDate = widget.taskToEdit!.deadline;
+      selectedTime = TimeOfDay.fromDateTime(widget.taskToEdit!.deadline);
+    }
+  }
+
   Future<void> _pickDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
       builder: (context, child) {
@@ -28,7 +40,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         );
       },
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
       });
@@ -38,7 +50,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   Future<void> _pickTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: selectedTime ?? TimeOfDay.now(),
       builder: (context, child) {
         return Localizations.override(
           context: context,
@@ -55,7 +67,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         );
       },
     );
-    if (picked != null && picked != selectedTime) {
+    if (picked != null) {
       setState(() {
         selectedTime = picked;
       });
@@ -70,7 +82,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset('assets/logo.png'),
         ),
-        title: const Text("Add new task"),
+        title: Text(widget.taskToEdit == null ? "Add new task" : "Edit task"),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
@@ -144,14 +156,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     );
 
                     final newTask = Task(
+                      id: widget.taskToEdit?.id, 
                       title: controller.text,
                       deadline: finalDeadline,
+                      orderId: widget.taskToEdit?.orderId ?? 0,
                     );
 
                     Navigator.pop(context, newTask);
                   }
                 },
-                child: const Text("Save task"),
+                child: Text(widget.taskToEdit == null ? "Save task" : "Update task"),
               ),
             ),
           ],

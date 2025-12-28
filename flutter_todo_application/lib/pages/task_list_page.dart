@@ -77,6 +77,12 @@ class _TaskListPageState extends State<TaskListPage> {
     await _tasksCollection.add(task.toMap());
   }
 
+  Future<void> _updateTaskInFirebase(Task task) async {
+    if (task.id != null) {
+      await _tasksCollection.doc(task.id).update(task.toMap());
+    }
+  }
+
   Future<void> _deleteTaskFromFirebase(String id) async {
     await _tasksCollection.doc(id).delete();
   }
@@ -117,6 +123,19 @@ class _TaskListPageState extends State<TaskListPage> {
     );
   }
 
+  Future<void> _handleEdit(Task task) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTaskPage(taskToEdit: task),
+      ),
+    );
+
+    if (result != null && result is Task) {
+      await _updateTaskInFirebase(result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,8 +174,18 @@ class _TaskListPageState extends State<TaskListPage> {
                     for (int index = 0; index < tasks.length; index++)
                       Dismissible(
                         key: Key(tasks[index].id!),
-                        direction: DismissDirection.endToStart,
+                        direction: DismissDirection.horizontal,
                         background: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 20),
+                          child: const Icon(Icons.edit, color: Colors.white),
+                        ),
+                        secondaryBackground: Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
                             color: Colors.red,
@@ -167,10 +196,17 @@ class _TaskListPageState extends State<TaskListPage> {
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         confirmDismiss: (direction) async {
-                          return await _showDeleteConfirmationDialog();
+                          if (direction == DismissDirection.startToEnd) {
+                            _handleEdit(tasks[index]);
+                            return false;
+                          } else {
+                            return await _showDeleteConfirmationDialog();
+                          }
                         },
                         onDismissed: (direction) {
-                          _deleteTaskFromFirebase(tasks[index].id!);
+                          if (direction == DismissDirection.endToStart) {
+                            _deleteTaskFromFirebase(tasks[index].id!);
+                          }
                         },
                         child: Container(
                           key: ValueKey(tasks[index].id),
@@ -181,6 +217,7 @@ class _TaskListPageState extends State<TaskListPage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
+                                // ignore: deprecated_member_use
                                 color: Colors.black.withOpacity(0.05),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
